@@ -83,7 +83,7 @@
                     </httpConnector>
                     <scanIntervalSeconds>10</scanIntervalSeconds>
                     <webApp>
-                        <contextPath>/</contextPath>
+                        <contextPath>/demo</contextPath>
                     </webApp>
                 </configuration>
             </plugin>
