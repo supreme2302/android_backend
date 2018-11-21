@@ -7,5 +7,13 @@ CREATE TABLE IF NOT EXISTS "users" (
   password TEXT NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS  "notes" (
+  id SERIAL NOT NULL  PRIMARY KEY,
+  author CITEXT NOT NULL,
+  FOREIGN KEY (author) REFERENCES "users"(username),
+  title CITEXT NOT NULL,
+  body CITEXT NOT NULL
+);
+
 
 

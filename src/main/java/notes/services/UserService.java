@@ -2,11 +2,14 @@ package notes.services;
 
 
 import notes.DAO.UserDao;
+import notes.models.Task;
 import notes.models.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 
 @Service
@@ -36,5 +39,17 @@ public class UserService {
         } else {
             return null;
         }
+    }
+
+    public List<Task> getTaskList(String username) {
+        try {
+            return userDao.getTaskList(username);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
+
+    public void addNote (Task task) {
+        userDao.addNote(task);
     }
 }

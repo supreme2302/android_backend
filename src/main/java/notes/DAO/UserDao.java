@@ -1,5 +1,6 @@
 package notes.DAO;
 
+import notes.models.Task;
 import notes.models.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -10,6 +11,7 @@ import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 
 @Repository
@@ -21,6 +23,7 @@ public class UserDao {
     private JdbcTemplate jdbc;
 
     private static final UserMapper userMapper = new UserMapper();
+    private static final TaskMapper taskMapper = new TaskMapper();
 
     @PostConstruct
     public void init() {
@@ -45,6 +48,16 @@ public class UserDao {
 
     }
 
+    public List<Task> getTaskList(String username) {
+        final String sql = "SELECT * FROM notes WHERE username::citext = ?::citext";
+        return jdbc.query(sql, taskMapper, username);
+    }
+
+    public void addNote(Task task) {
+        final String sql = "INSERT INTO notes (author, title. body) VALUES (?, ?, ?)";
+        jdbc.update(sql, task.getAuthor(), task.getTitle(), task.getBody());
+    }
+
     private static final class UserMapper implements RowMapper<User> {
 
         @Override
@@ -54,6 +67,18 @@ public class UserDao {
             user.setEmail(resultSet.getString("email"));
             user.setPassword(resultSet.getString("password"));
             return user;
+        }
+    }
+
+    private static final class TaskMapper implements RowMapper<Task> {
+
+        @Override
+        public Task mapRow(ResultSet resultSet, int i) throws SQLException {
+            final Task task = new Task();
+            task.setAuthor(resultSet.getString("author"));
+            task.setTitle(resultSet.getString("title"));
+            task.setBody(resultSet.getString("body"));
+            return task;
         }
     }
 }

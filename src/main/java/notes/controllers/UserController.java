@@ -1,6 +1,7 @@
 package notes.controllers;
 
 import notes.models.Message;
+import notes.models.Task;
 import notes.models.User;
 import notes.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
+import java.util.List;
 
 
 @Controller
@@ -26,7 +28,8 @@ public class UserController {
         WRONG_CREDENTIALS,
         NOT_UNIQUE_USERNAME,
         ALREADY_AUTHENTICATED,
-        NOT_FOUND
+        NOT_FOUND,
+        SUCCESSFULLY_ADDED
     }
 
     @Autowired
@@ -98,13 +101,32 @@ public class UserController {
     }
 
 
-    @GetMapping(path = "/profile/{nickname}")
-    public ResponseEntity getProfileUser(@PathVariable("nickname") String nickname) {
-        User user = userService.getUserByNickname(nickname);
-        if (user == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Message(UserStatus.NOT_FOUND));
+    @GetMapping(path = "/notes/{username}")
+    public ResponseEntity getProfileUser(@PathVariable("username") String username, HttpSession session) {
+        if (session.getAttribute("user") == null) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
+                    new Message(UserStatus.ACCESS_ERROR)
+            );
         }
-        return ResponseEntity.ok(user);
+//        User user = userService.getUserByNickname(username);
+//        if (user == null) {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Message(UserStatus.NOT_FOUND));
+//        }
+
+        List<Task> taskList = userService.getTaskList(username);
+//        if (taskList == null) {}
+        return ResponseEntity.ok(taskList);
+    }
+
+    @RequestMapping(method = RequestMethod.POST, path = "/add")
+    public ResponseEntity addNote(HttpSession session, @RequestBody Task task) {
+        if (session.getAttribute("user") == null) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
+                    new Message(UserStatus.ACCESS_ERROR)
+            );
+        }
+        userService.addNote(task);
+        return ResponseEntity.status(HttpStatus.CREATED).body(new Message(UserStatus.SUCCESSFULLY_ADDED));
     }
 
 
