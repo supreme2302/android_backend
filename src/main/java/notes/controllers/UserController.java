@@ -106,11 +106,11 @@ public class UserController {
     @GetMapping(path = "/notes/{username}")
     public ResponseEntity getProfileUser(@PathVariable("username") String username, HttpSession session) {
         System.out.println("session: " + session.getId());
-        if (session.getAttribute("user") == null) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
-                    new Message(UserStatus.ACCESS_ERROR)
-            );
-        }
+//        if (session.getAttribute("user") == null) {
+//            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
+//                    new Message(UserStatus.ACCESS_ERROR)
+//            );
+//        }
 //        User user = userService.getUserByNickname(username);
 //        if (user == null) {
 //            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Message(UserStatus.NOT_FOUND));
