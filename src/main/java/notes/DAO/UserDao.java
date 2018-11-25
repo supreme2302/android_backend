@@ -54,7 +54,7 @@ public class UserDao {
     }
 
     public void addNote(Task task) {
-        final String sql = "INSERT INTO notes (author, title. body) VALUES (?, ?, ?)";
+        final String sql = "INSERT INTO notes (author, title, body) VALUES (?, ?, ?)";
         jdbc.update(sql, task.getAuthor(), task.getTitle(), task.getBody());
     }
 
