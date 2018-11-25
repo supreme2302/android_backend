@@ -37,6 +37,7 @@ public class UserController {
 
     @RequestMapping(method = RequestMethod.PUT, path = "/create")
     public ResponseEntity create(HttpSession session, @RequestBody User user) {
+        System.out.println("session: " + session.getId());
         if (session.getAttribute("user") != null) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
                     new Message(UserStatus.ALREADY_AUTHENTICATED, user.getName())
@@ -65,6 +66,7 @@ public class UserController {
 
     @RequestMapping(method = RequestMethod.POST, path = "/auth")
     public ResponseEntity auth(HttpSession session, @RequestBody User user) {
+        System.out.println("session: " + session.getId());
         if (session.getAttribute("user") != null) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
                     new Message(UserStatus.ALREADY_AUTHENTICATED, user.getName())
@@ -103,6 +105,7 @@ public class UserController {
 
     @GetMapping(path = "/notes/{username}")
     public ResponseEntity getProfileUser(@PathVariable("username") String username, HttpSession session) {
+        System.out.println("session: " + session.getId());
         if (session.getAttribute("user") == null) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
                     new Message(UserStatus.ACCESS_ERROR)
