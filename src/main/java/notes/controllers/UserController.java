@@ -129,6 +129,19 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(new Message(UserStatus.SUCCESSFULLY_ADDED));
     }
 
+    @RequestMapping(method = RequestMethod.GET, path = "/info")
+    public ResponseEntity getInfo(HttpSession session) {
+        if (session.getAttribute("user") == null) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
+                    new Message(UserStatus.ACCESS_ERROR)
+            );
+        }
+        User user = userService.getUserByNickname((String) session.getAttribute("user"));
+        user.setPassword("kaka");
+
+        return ResponseEntity.status(HttpStatus.OK).body(new Message(user));
+    }
+
 
     private static void sessionAuth(HttpSession session, User user) {
         session.setAttribute("user", user.getName());
