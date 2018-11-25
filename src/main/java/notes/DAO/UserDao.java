@@ -49,7 +49,7 @@ public class UserDao {
     }
 
     public List<Task> getTaskList(String username) {
-        final String sql = "SELECT * FROM notes WHERE username::citext = ?::citext";
+        final String sql = "SELECT * FROM notes WHERE author::citext = ?::citext";
         return jdbc.query(sql, taskMapper, username);
     }
 
