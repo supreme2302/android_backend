@@ -123,11 +123,11 @@ public class UserController {
 
     @RequestMapping(method = RequestMethod.POST, path = "/add")
     public ResponseEntity addNote(HttpSession session, @RequestBody Task task) {
-        if (session.getAttribute("user") == null) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
-                    new Message(UserStatus.ACCESS_ERROR)
-            );
-        }
+//        if (session.getAttribute("user") == null) {
+//            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
+//                    new Message(UserStatus.ACCESS_ERROR)
+//            );
+//        }
         userService.addNote(task);
         return ResponseEntity.status(HttpStatus.CREATED).body(new Message(UserStatus.SUCCESSFULLY_ADDED));
     }

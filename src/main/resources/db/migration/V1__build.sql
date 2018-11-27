@@ -17,3 +17,5 @@ CREATE TABLE IF NOT EXISTS  "notes" (
   body CITEXT NOT NULL
 );
 
+
+
