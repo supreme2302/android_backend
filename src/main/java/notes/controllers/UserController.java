@@ -16,7 +16,7 @@ import javax.servlet.http.HttpSession;
 import java.util.List;
 
 
-@Controller
+@RestController
 @RequestMapping("/users")
 public class UserController {
 
@@ -29,7 +29,9 @@ public class UserController {
         NOT_UNIQUE_USERNAME,
         ALREADY_AUTHENTICATED,
         NOT_FOUND,
-        SUCCESSFULLY_ADDED
+        SUCCESSFULLY_ADDED,
+        SUCCESSFULLY_UPDATED,
+        NOT_UNIQUE_TITLE
     }
 
     @Autowired
@@ -37,7 +39,6 @@ public class UserController {
 
     @RequestMapping(method = RequestMethod.PUT, path = "/create")
     public ResponseEntity create(HttpSession session, @RequestBody User user) {
-        System.out.println("session: " + session.getId());
         if (session.getAttribute("user") != null) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
                     new Message(UserStatus.ALREADY_AUTHENTICATED, user.getName())
@@ -66,7 +67,6 @@ public class UserController {
 
     @RequestMapping(method = RequestMethod.POST, path = "/auth")
     public ResponseEntity auth(HttpSession session, @RequestBody User user) {
-        System.out.println("session: " + session.getId());
         if (session.getAttribute("user") != null) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
                     new Message(UserStatus.ALREADY_AUTHENTICATED, user.getName())
@@ -105,34 +105,48 @@ public class UserController {
 
     @GetMapping(path = "/notes/{username}")
     public ResponseEntity getProfileUser(@PathVariable("username") String username, HttpSession session) {
-        System.out.println("session: " + session.getId());
-        if (session.getAttribute("user") == null) {
+        Object userSession = session.getAttribute("user");
+        if (userSession == null) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
                     new Message(UserStatus.ACCESS_ERROR)
             );
         }
+        String usernameFromSession = userSession.toString();
+        if (!usernameFromSession.equals(username)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
+                    new Message(UserStatus.ACCESS_ERROR)
+            );
+        }
+
         User user = userService.getUserByNickname(username);
-       System.out.println("User is:  " + user.getName() + "\n" + user.getEmail());
-	 if (user == null) {
+        if (user == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Message(UserStatus.NOT_FOUND));
         }
 
         List<Task> taskList = userService.getTaskList(username);
-//        if (taskList == null) {}
         return ResponseEntity.ok(taskList);
     }
 
     @RequestMapping(method = RequestMethod.POST, path = "/add")
     public ResponseEntity addNote(HttpSession session, @RequestBody Task task) {
-        System.out.println("addfunc");
-	if (session.getAttribute("user") == null) {
+        Object userSession = session.getAttribute("user");
+        if (userSession == null) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
                     new Message(UserStatus.ACCESS_ERROR)
             );
         }
-	System.out.println("add");
-        userService.addNote(task);
-	System.out.println("added");
+        String userFromSession = userSession.toString();
+        if (!userFromSession.equals(task.getAuthor())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
+              new Message(UserStatus.ACCESS_ERROR)
+            );
+        }
+        boolean added = userService.addNote(task);
+        if (!added) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(
+              new Message(UserStatus.NOT_UNIQUE_TITLE)
+            );
+        }
         return ResponseEntity.status(HttpStatus.CREATED).body(new Message(UserStatus.SUCCESSFULLY_ADDED));
     }
 
@@ -147,6 +161,24 @@ public class UserController {
         user.setPassword("kaka");
 
         return ResponseEntity.status(HttpStatus.OK).body(new Message(user));
+    }
+
+    @RequestMapping(method = RequestMethod.POST, path = "/update")
+    public ResponseEntity update(HttpSession session, @RequestBody Task task) {
+        Object userSession = session.getAttribute("user");
+        if (userSession == null) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
+                    new Message(UserStatus.ACCESS_ERROR)
+            );
+        }
+        String userFromSession = userSession.toString();
+        if (!userFromSession.equals(task.getAuthor())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
+                    new Message(UserStatus.ACCESS_ERROR)
+            );
+        }
+        userService.updateNote(task);
+        return ResponseEntity.status(HttpStatus.OK).body(new Message(UserStatus.SUCCESSFULLY_UPDATED));
     }
 
 

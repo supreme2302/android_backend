@@ -49,7 +49,11 @@ public class UserService {
         }
     }
 
-    public void addNote (Task task) {
-        userDao.addNote(task);
+    public boolean addNote (Task task) {
+        return userDao.addNote(task);
+    }
+
+    public void updateNote(Task task) {
+        userDao.updateNote(task);
     }
 }

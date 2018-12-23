@@ -1,7 +1,5 @@
 CREATE EXTENSION IF NOT EXISTS citext;
 
-
-
 CREATE TABLE IF NOT EXISTS "users" (
   id SERIAL NOT NULL PRIMARY KEY ,
   username CITEXT NOT NULL UNIQUE ,
@@ -16,6 +14,8 @@ CREATE TABLE IF NOT EXISTS  "notes" (
   title CITEXT NOT NULL,
   body CITEXT NOT NULL
 );
+
+CREATE UNIQUE INDEX IF NOT EXISTS notesIx on "notes"(author, title);
 
 
 

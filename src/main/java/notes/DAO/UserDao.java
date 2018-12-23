@@ -3,6 +3,7 @@ package notes.DAO;
 import notes.models.Task;
 import notes.models.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -27,13 +28,17 @@ public class UserDao {
 
     @PostConstruct
     public void init() {
-        System.out.println("JDBC is called. DataSource = " + dataSource);
         jdbc = new JdbcTemplate(dataSource);
     }
 
-    public void createUser(User user) {
+    public boolean createUser(User user) {
         final String sql = "INSERT INTO users (username, email, password) VALUES (?, ?, ?)";
-        jdbc.update(sql, user.getName(), user.getEmail(), user.getPassword());
+        try {
+            jdbc.update(sql, user.getName(), user.getEmail(), user.getPassword());
+            return true;
+        } catch (DuplicateKeyException e) {
+            return false;
+        }
     }
 
     public User getUserByNickname(String nickname) {
@@ -53,9 +58,20 @@ public class UserDao {
         return jdbc.query(sql, taskMapper, username);
     }
 
-    public void addNote(Task task) {
+    public boolean addNote(Task task) {
         final String sql = "INSERT INTO notes (author, title, body) VALUES (?, ?, ?)";
-        jdbc.update(sql, task.getAuthor(), task.getTitle(), task.getBody());
+        try {
+            jdbc.update(sql, task.getAuthor(), task.getTitle(), task.getBody());
+            return true;
+        } catch (DuplicateKeyException e) {
+            return false;
+        }
+
+    }
+
+    public void updateNote(Task task) {
+        final String sql = "UPDATE notes SET body = ? WHERE title::citext = ?::citext AND author::citext = ?::citext";
+        jdbc.update(sql, task.getBody(), task.getTitle(), task.getAuthor());
     }
 
     private static final class UserMapper implements RowMapper<User> {
