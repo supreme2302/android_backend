@@ -106,15 +106,16 @@ public class UserController {
     @GetMapping(path = "/notes/{username}")
     public ResponseEntity getProfileUser(@PathVariable("username") String username, HttpSession session) {
         System.out.println("session: " + session.getId());
-//        if (session.getAttribute("user") == null) {
-//            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
-//                    new Message(UserStatus.ACCESS_ERROR)
-//            );
-//        }
-//        User user = userService.getUserByNickname(username);
-//        if (user == null) {
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Message(UserStatus.NOT_FOUND));
-//        }
+        if (session.getAttribute("user") == null) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
+                    new Message(UserStatus.ACCESS_ERROR)
+            );
+        }
+        User user = userService.getUserByNickname(username);
+       System.out.println("User is:  " + user.getName() + "\n" + user.getEmail());
+	 if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Message(UserStatus.NOT_FOUND));
+        }
 
         List<Task> taskList = userService.getTaskList(username);
 //        if (taskList == null) {}
@@ -123,12 +124,15 @@ public class UserController {
 
     @RequestMapping(method = RequestMethod.POST, path = "/add")
     public ResponseEntity addNote(HttpSession session, @RequestBody Task task) {
-//        if (session.getAttribute("user") == null) {
-//            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
-//                    new Message(UserStatus.ACCESS_ERROR)
-//            );
-//        }
+        System.out.println("addfunc");
+	if (session.getAttribute("user") == null) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
+                    new Message(UserStatus.ACCESS_ERROR)
+            );
+        }
+	System.out.println("add");
         userService.addNote(task);
+	System.out.println("added");
         return ResponseEntity.status(HttpStatus.CREATED).body(new Message(UserStatus.SUCCESSFULLY_ADDED));
     }
 

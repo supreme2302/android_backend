@@ -79,7 +79,7 @@
                 <version>9.4.12.v20180830</version>
                 <configuration>
                     <httpConnector>
-                        <port>80</port>
+                        <port>8080</port>
                     </httpConnector>
                     <scanIntervalSeconds>10</scanIntervalSeconds>
                     <webApp>
