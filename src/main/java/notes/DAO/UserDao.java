@@ -66,7 +66,11 @@ public class UserDao {
         } catch (DuplicateKeyException e) {
             return false;
         }
+    }
 
+    public void deleteNote(Task task) {
+        final String sql = "DELETE FROM notes WHERE title::citext = ?::citext";
+        jdbc.update(sql, task.getTitle());
     }
 
     public void updateNote(Task task) {

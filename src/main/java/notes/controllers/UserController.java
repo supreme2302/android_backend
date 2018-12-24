@@ -181,6 +181,20 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(new Message(UserStatus.SUCCESSFULLY_UPDATED));
     }
 
+    @RequestMapping(method = RequestMethod.POST, path = "/delete")
+    public ResponseEntity delete(HttpSession session,
+                                 @RequestBody Task task) {
+        Object userSession = session.getAttribute("user");
+        if (userSession == null) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new Message(UserStatus.ACCESS_ERROR));
+        }
+        String userFromSession = userSession.toString();
+        if (!userFromSession.equals(task.getAuthor())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new Message(UserStatus.ACCESS_ERROR));
+        }
+        userService.deleteNote(task);
+        return ResponseEntity.status(HttpStatus.OK).body(new Message(UserStatus.SUCCESSFULLY_UPDATED));
+    }
 
     private static void sessionAuth(HttpSession session, User user) {
         session.setAttribute("user", user.getName());

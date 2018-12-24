@@ -56,4 +56,8 @@ public class UserService {
     public void updateNote(Task task) {
         userDao.updateNote(task);
     }
+
+    public void deleteNote(Task task) {
+        userDao.deleteNote(task);
+    }
 }
