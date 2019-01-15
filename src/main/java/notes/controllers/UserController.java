@@ -37,7 +37,7 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @RequestMapping(method = RequestMethod.PUT, path = "/create")
+    @RequestMapping(method = RequestMethod.POST, path = "/create")
     public ResponseEntity create(HttpSession session, @RequestBody User user) {
         if (session.getAttribute("user") != null) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
@@ -163,7 +163,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(new Message(user));
     }
 
-    @RequestMapping(method = RequestMethod.POST, path = "/update")
+    @RequestMapping(method = RequestMethod.PUT, path = "/update")
     public ResponseEntity update(HttpSession session, @RequestBody Task task) {
         Object userSession = session.getAttribute("user");
         if (userSession == null) {
